@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Webcam View</title>
+    <style>
+        .webcam-container { margin: 20px 0; }
+        .webcam-stream { display: none; }
+        .camera-tabs { 
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .camera-tabs li {
+            display: inline-block;
+            margin-right: 10px;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .camera-tabs li.active {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>Webcam Viewer</h1>
+    
+    {% if cameras %}
+        <button onclick="toggleWebcam()">Toggle Webcam</button>
+        <ul class="camera-tabs">
+            {% for camera in cameras %}
+            <li onclick="switchCamera({{ camera }})">Camera {{ camera }}</li>
+            {% endfor %}
+        </ul>
+        <div class="webcam-container">
+            <div id="webcam-stream" class="webcam-stream">
+                <img id="camera-feed" src="{% url 'camera_stream' 0 %}" width="640" height="480" />
+            </div>
+        </div>
+    {% else %}
+        <p>No webcams detected.</p>
+    {% endif %}
+
+    <script>
+        function toggleWebcam() {
+            const stream = document.getElementById('webcam-stream');
+            stream.style.display = stream.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function switchCamera(cameraId) {
+            const feed = document.getElementById('camera-feed');
+            feed.src = "{% url 'camera_stream' 0 %}".replace('0', cameraId);
+            
+            // Update active tab
+            document.querySelectorAll('.camera-tabs li').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
